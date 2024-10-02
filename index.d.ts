@@ -1,1 +1,1 @@
-export default function remarkObsidian(): (tree: any) => void;
+export default function remarkObsidian();
