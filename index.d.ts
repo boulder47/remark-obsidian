@@ -1,1 +1,1 @@
-declare module 'remark-obsidian';
+export default function remarkObsidian(): (tree: any) => void;
