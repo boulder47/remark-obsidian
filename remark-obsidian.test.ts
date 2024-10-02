@@ -1,5 +1,5 @@
 import { remark } from 'remark';
-import { remarkObsidian } from 'index'; // Adjust this import path based on your folder structure
+import { remarkObsidian } from './index'; // Adjust this import path based on your folder structure
 
 // Example test to check if the plugin processes links
 describe('remark-obsidian', () => {
