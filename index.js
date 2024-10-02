@@ -1,4 +1,3 @@
-import { Node } from 'unist';
 import { visit } from "unist-util-visit";
 import {
   FlameIcon,
@@ -61,6 +60,9 @@ icons.set("quote", QuoteIcon);
 icons.set("cite", QuoteIcon);
 
 export default function remarkObsidian() {
+  /**
+* @param {{ children: string | any[]; type: string; data: { hProperties: { className: string; callout: any; }; }; }} node
+*/
   function blockVisitor(node) {
     /*
     Callouts are blockquotes denoted by [!type].
@@ -148,6 +150,9 @@ export default function remarkObsidian() {
     }
   }
 
+  /**
+* @param {{ children: any[]; }} node
+*/
   function commentVisitor(node) {
     node.children = node.children.map((child) => {
       if (child.type === "text") {
@@ -157,6 +162,9 @@ export default function remarkObsidian() {
     });
   }
 
+  /**
+* @param {any} node
+*/
   function highlightVisitor(node) {
     visit(node, "text", (child, index, parent) => {
       const regex = /==(.*?)==/g;
@@ -188,6 +196,9 @@ export default function remarkObsidian() {
     });
   }
 
+  /**
+* @param {any} tree
+*/
   function transform(tree) {
     visit(tree, "blockquote", blockVisitor);
     visit(tree, "paragraph", commentVisitor);
