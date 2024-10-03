@@ -1,18 +1,20 @@
 {
-  "compilerOptions": {
-    "target": "ES6",                          // Target ECMAScript version
-    "module": "ESNext",                       // Use ESNext module resolution (supports both ES and CommonJS)
-    "moduleResolution": "node",               // Resolve modules using Node.js module resolution
-    "esModuleInterop": true,                  // Enables interop between CommonJS and ES modules
-    "forceConsistentCasingInFileNames": true, // Ensures consistent file casing
-    "strict": true,                           // Enable all strict type checking options
-    "skipLibCheck": true,                     // Skip type checking of declaration files for faster builds
-    "outDir": "./dist",                       // Output directory for compiled files
-    "rootDir": ".",                       // Specifies the root directory of input files
+    "include": ["src", "test"],
+   "compilerOptions": {
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "target": "ESNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": false,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationDir": "dist",
+    "moduleResolution": "node",
+    "downlevelIteration": true,
     "resolveJsonModule": true,                // Allow importing `.json` files
-    "allowSyntheticDefaultImports": true,     // Allows default imports from modules that don't have them
-    "noImplicitAny": true                     // Raise an error on expressions with an implied `any` type
+    "allowSyntheticDefaultImports": true     // Allows default imports from modules that don't have them
   },
-  "include": ["./**/*"],                    // Include all files in the `src` directory
   "exclude": ["node_modules", "dist"]         // Exclude `node_modules` and `dist` directories
 }
