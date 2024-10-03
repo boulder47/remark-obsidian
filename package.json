@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "remark plugin for obsidian style syntax",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "test": "vitest"
   },
