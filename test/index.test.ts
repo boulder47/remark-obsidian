@@ -1,32 +1,55 @@
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
-import remarkObsidian from './src/index'; // Adjust this import path based on your folder structure
+import { describe, it, expect } from 'vitest';
+import { remark } from 'remark';
+import remarkObsidian from '../src/index';  // Adjust path based on your project structure
 
-// Example test to check if the plugin processes links
-describe('remark-obsidian', () => {
+describe('remark-obsidian plugin', () => {
+
   it('should process wiki links', () => {
     const markdownContent = 'This is a [[WikiLink]] example.';
-    
+
     const result = remark()
       .use(remarkObsidian)
       .processSync(markdownContent)
       .toString();
 
-    // Adjust the expected output based on what the plugin should transform
-    expect(result).toBe('This is a [[WikiLink]] example.'); // Change to your expected output
+    // Replace this with the actual expected output from the plugin
+    expect(result).toBe('This is a [[WikiLink]] example.');
   });
 
-  it('should process internal links correctly', () => {
+  it('should handle alias links', () => {
+    const markdownContent = 'This is an alias link [[Page Title|Alias]].';
+
+    const result = remark()
+      .use(remarkObsidian)
+      .processSync(markdownContent)
+      .toString();
+
+    // Replace this with the actual expected output from the plugin
+    expect(result).toBe('This is an alias link [[Page Title|Alias]].');
+  });
+
+  it('should process internal links', () => {
     const markdownContent = '[Link Text](internal-link)';
-    
+
     const result = remark()
       .use(remarkObsidian)
       .processSync(markdownContent)
       .toString();
 
-    expect(result).toBe('[Link Text](internal-link)'); // Adjust based on expected output
+    expect(result).toBe('[Link Text](internal-link)');  // Replace with actual expected output
   });
 
-  // Add more tests for different functionalities of the plugin
+  it('should process embedded notes', () => {
+    const markdownContent = '![[EmbeddedNote]]';
+
+    const result = remark()
+      .use(remarkObsidian)
+      .processSync(markdownContent)
+      .toString();
+
+    // Replace this with the actual expected output from the plugin
+    expect(result).toBe('![[EmbeddedNote]]');
+  });
+
+  // Add more tests for other features like handling front matter, parsing code blocks, etc.
 });
