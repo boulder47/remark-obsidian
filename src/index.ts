@@ -1,183 +1,209 @@
 import { visit } from "unist-util-visit";
-import { isElement } from "hast-util-is-element";
-import { h } from "hastscript";
-import { Plugin } from "unified";
-import { fromHtml } from "hast-util-from-html";
+import {
+  FlameIcon,
+  InfoIcon,
+  PencilIcon,
+  ClipboardListIcon,
+  CheckCircle2Icon,
+  CheckIcon,
+  HelpCircleIcon,
+  ListIcon,
+  QuoteIcon,
+  AlertTriangleIcon,
+  XIcon,
+  ZapIcon,
+  BugIcon,
+} from "lucide-react";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 
-import { Config, defaultConfig } from "./config";
-export { Config, defaultConfig };
+const icons = new Map();
+// notes
+icons.set("note", PencilIcon);
+// abstracts
+icons.set("abstract", ClipboardListIcon);
+icons.set("summary", ClipboardListIcon);
+icons.set("tldr", ClipboardListIcon);
+// info
+icons.set("info", InfoIcon);
+// to do
+icons.set("todo", CheckCircle2Icon);
+// tip
+icons.set("tip", FlameIcon);
+icons.set("hint", FlameIcon);
+icons.set("important", FlameIcon);
+// success
+icons.set("success", CheckIcon);
+icons.set("check", CheckIcon);
+icons.set("done", CheckIcon);
+// question
+icons.set("question", HelpCircleIcon);
+icons.set("help", HelpCircleIcon);
+icons.set("faq", HelpCircleIcon);
+// warning
+icons.set("warning", AlertTriangleIcon);
+icons.set("caution", AlertTriangleIcon);
+icons.set("attention", AlertTriangleIcon);
+// failure
+icons.set("failure", XIcon);
+icons.set("fail", XIcon);
+icons.set("missing", XIcon);
+// danger
+icons.set("danger", ZapIcon);
+icons.set("error", ZapIcon);
+// bug
+icons.set("bug", BugIcon);
+// example
+icons.set("example", ListIcon);
+// quote
+icons.set("quote", QuoteIcon);
+icons.set("cite", QuoteIcon);
 
-const CALLOUT_REGEX =
-  /\[!(?<kind>[\w]+)\](?<collapsable>-{0,1})\s*(?<title>.*)/g;
+export default function remarkObsidian() {
+  /**
+* @param {{ children: string | any[]; type: string; data: { hProperties: { className: string; callout: any; }; }; }} node
+*/
+  function blockVisitor(node) {
+    /*
+    Callouts are blockquotes denoted by [!type].
+    Blockquotes have paragraph children, who have text children.
+    */
+    let quote = node.children[0].children[0].value;
 
-const SPLIT_BY_NEWLINE_REGEX = /(?<prefix>[^\n]*)\n(?<suffix>[\S\s]*)/g;
+    if (quote.startsWith("[!")) {
+      // we have a callout. check for titles
+      let [title, ...content] = quote.split("\n");
+      let callout = title.split(" ")[0].slice(2, -1);
 
-const getIcon = (config: Config, kind: string) => {
-  if (!config.showIcon || config.callouts[kind] == undefined) return;
-
-  return h(
-    config.iconTagName,
-    { className: "callout-icon-wrapper" },
-    fromHtml(config.callouts[kind].icon, {
-      space: "svg",
-      fragment: true,
-    })
-  );
-};
-
-const rehypeObsidian: Plugin = (userConfig: Partial<Config>) => {
-  const config = {
-    ...defaultConfig,
-    ...userConfig,
-    callouts: {
-      ...defaultConfig.callouts,
-      ...userConfig?.callouts,
-    },
-  };
-
-  return (tree) => {
-    visit(tree, (node) => {
-      /* parse only blockquote */
-      if (!isElement(node, "blockquote")) return;
-
-      // strip useless nodes, leftovers from markdown
-      node.children = node.children.filter(
-        (c) => !(c.type === "text" && c.value === "\n")
-      );
-
-      /* empty blockquote don't concern us */
-      if (node.children.length === 0) return;
-
-      /* the first element must be a paragraph */
-      if (!isElement(node.children[0], "p")) return;
-
-      /* empty paragraphs, etc. TODO keep this only if needed in tests */
-      if (node.children[0].children.length === 0) return;
-
-      /* ignore paragraphs that don't start with plaintext */
-      if (node.children[0].children[0].type !== "text") return;
-
-      /* finally, match the callout regex */
-      if (!node.children[0].children[0].value.match(CALLOUT_REGEX)) return;
-
-      /* the first paragraph may include `\n`, `borderingIndex` is the index of
-         that element */
-      let borderingIndex: number | undefined = undefined;
-      node.children[0].children.forEach((c, i) => {
-        if (c.type == "text" && c.value.includes("\n")) {
-          borderingIndex = i;
-        }
-      });
-
-      /* if the first element contains new line, split it to two new elemnts */
-      if (borderingIndex !== undefined) {
-        /* typecast */
-        const borderingElement = node.children[0].children[borderingIndex];
-        if (borderingElement.type !== "text") throw new Error();
-
-        const nomatch = SPLIT_BY_NEWLINE_REGEX.exec(borderingElement.value);
-        SPLIT_BY_NEWLINE_REGEX.lastIndex = 0; // reset the regex
-
-        if (nomatch !== null && nomatch.groups) {
-          const { prefix, suffix } = nomatch.groups;
-
-          node.children = [
-            node.children[0],
-            h("p", suffix, node.children[0].children.slice(borderingIndex + 1)),
-            ...node.children.slice(1),
-          ];
-
-          /* typecast */
-          if (isElement(!node.children[0]) || !("children" in node.children[0]))
-            throw new Error();
-
-          node.children[0].children = node.children[0].children
-            .slice(0, borderingIndex)
-            .concat([{ type: "text", value: prefix }]);
-        }
-      }
-
-      let firstParagraph1 = node.children[0];
-      let firstTextNode = firstParagraph1.children[0];
-
-      if (!isElement(firstParagraph1) || firstTextNode.type !== "text") return;
-
-      const match = CALLOUT_REGEX.exec(firstTextNode.value);
-      CALLOUT_REGEX.lastIndex = 0; // reset the regex
-
-      if (!match || !match.groups) return;
-
-      const { title, kind, collapsable } = match.groups;
-
-      if (!node.properties) {
-        node.properties = {};
-      }
-
-      node.properties.className = [
-        `callout-type-${kind.toLowerCase()}`,
-        "callout-block",
-        collapsable && "callout-collapsible",
-      ];
-
-      node.tagName = collapsable ? "details" : "div";
-
-      /* strip leading characters: `[!kind]- something` -> `something` */
-      firstTextNode.value = firstTextNode.value.substring(
-        3 + kind.length + collapsable.length
-      );
-
-      if (
-        firstTextNode.value.length == 0 &&
-        firstParagraph1.children.length == 1
-      ) {
-        // thrown away the now-empty paragraph
-        node.children.shift();
-      }
-
-      if (title !== "") {
-        if (!node.children[0].properties) {
-          node.children[0].properties = {};
-        }
-        node.children[0].properties.className = ["callout-title"];
-      }
-
-      const icon =
-        config.showIcon && config.callouts[kind]
-          ? fromHtml(config.callouts[kind], {
-              space: "svg",
-              fragment: true,
-            })
-          : undefined;
-
-      node.children = [
-        h(
-          collapsable ? "summary" : "div",
-          {
-            className: ["callout-title-section"],
+      // get the icon
+      let iconMarkup = renderToStaticMarkup(createElement(icons.get(callout)));
+      let iconNode = {
+        type: "html",
+        value: iconMarkup,
+      };
+      let iconDiv = {
+        type: "div",
+        children: [iconNode],
+        data: {
+          hProperties: {
+            className: "callout-icon",
           },
-          title === ""
-            ? [
-                getIcon(config, kind),
-                h(
-                  "p",
-                  { className: ["callout-title"] },
-                  config.callouts[kind].heading
-                    ? config.callouts[kind].heading
-                    : kind.charAt(0).toUpperCase() + kind.slice(1)
-                ),
-              ]
-            : [getIcon(config, kind), node.children[0]]
-        ),
-        h(
-          "div",
-          {
-            className: ["callout-content-section"],
+        },
+      };
+
+      // get the title
+      let titleNode = {
+        type: "text",
+        value: title.split(" ").slice(1).join(" "),
+      };
+      let titleText = {
+        type: "div",
+        children: [titleNode, ...node.children[0].children.slice(1)],
+        data: {
+          hProperties: {
+            className: "callout-title-inner",
           },
-          title === "" ? node.children : node.children.slice(1)
-        ),
-      ];
+        },
+      };
+
+      // change the title to a div including icon and rest of text
+      let titleDiv = {
+        type: "div",
+        children: [iconDiv, titleText],
+        data: {
+          hProperties: {
+            className: "callout-title",
+          },
+        },
+      };
+
+      // get the content
+      let contentNode = {
+        type: "text",
+        value: content.join("\n"),
+      };
+
+      let contentDiv = {
+        type: "div",
+        children: [
+          ...(content.length > 0 ? [contentNode] : []),
+          ...node.children.slice(1),
+        ],
+        data: {
+          hProperties: {
+            className: "callout-content",
+          },
+        },
+      };
+
+      // reformat block quote as div and add children
+      node.type = "div";
+      node.data = {
+        hProperties: {
+          className: "callout",
+          callout: callout,
+        },
+      };
+      if (contentDiv.children.length > 0)
+        node.children = [titleDiv, contentDiv];
+      else node.children = [titleDiv];
+    }
+  }
+
+  /**
+* @param {{ children: any[]; }} node
+*/
+  function commentVisitor(node) {
+    node.children = node.children.map((child) => {
+      if (child.type === "text") {
+        child.value = child.value.replace(/%%[^=]+%%/g, "");
+      }
+      return child;
     });
-  };
-};
+  }
 
-export default rehypeObsidian;
+  /**
+* @param {any} node
+*/
+  function highlightVisitor(node) {
+    visit(node, "text", (child, index, parent) => {
+      const regex = /==(.*?)==/g;
+      let match;
+      let parts = [];
+      let lastIndex = 0;
+
+      while ((match = regex.exec(child.value)) !== null) {
+        if (match.index > lastIndex) {
+          parts.push({
+            type: "text",
+            value: child.value.slice(lastIndex, match.index),
+          });
+        }
+        parts.push({
+          type: "html",
+          value: `<span class="highlight">${match[1]}</span>`,
+        });
+        lastIndex = regex.lastIndex;
+      }
+
+      if (lastIndex < child.value.length) {
+        parts.push({ type: "text", value: child.value.slice(lastIndex) });
+      }
+
+      if (parts.length > 0) {
+        parent.children.splice(index, 1, ...parts);
+      }
+    });
+  }
+
+  /**
+* @param {any} tree
+*/
+  function transform(tree) {
+    visit(tree, "blockquote", blockVisitor);
+    visit(tree, "paragraph", commentVisitor);
+    visit(tree, "paragraph", highlightVisitor);
+  }
+
+  return transform;
+}
