@@ -4,7 +4,7 @@
   "description": "remark plugin for obsidian style syntax",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
