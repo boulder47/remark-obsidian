@@ -1,6 +1,6 @@
 import { remark } from 'remark';
 import remarkParse from 'remark-parse';
-import remarkObsidian from './path-to-plugin';
+import remarkObsidian from './src/index';
 
 const markdown = `
 ---
