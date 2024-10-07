@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { remark } from 'remark';
 import remarkParse from 'remark-parse';
+import remarkStringify from 'remark-stringify'; // Add this
 import remarkObsidian from '../src/index'; // Import your plugin here
 
 describe('remark-obsidian plugin', () => {
@@ -90,6 +91,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('- List item 1');
