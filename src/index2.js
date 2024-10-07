@@ -3,7 +3,7 @@ import remarkParse from 'remark-parse';
 import visit from 'unist-util-visit';
 
 // Define a Remark plugin for Obsidian-specific syntax
-function remarkObsidian() {
+export default function remarkObsidian() {
   return function (tree) {
     // Process Obsidian Wiki Links: [[WikiLink]]
     visit(tree, 'link', (node) => {
