@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { remark } from 'remark';
-import remarkParse from 'remark-parse';
-import remarkObsidian from '../src/index'; // Import your plugin here
+import { remarkParse } from 'remark-parse';
+import { remarkStringify } from 'remark-stringify'; // Add this
+import { remarkObsidian } from '../src/index'; // Import your plugin here
 
 describe('remark-obsidian plugin', () => {
   it('should process wiki links', async () => {
@@ -10,6 +11,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('[[WikiLink]]');
@@ -21,6 +23,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('[[Page Title|Alias]]');
@@ -32,6 +35,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('![[EmbeddedNote]]');
@@ -43,6 +47,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('[Internal Link](obsidian://vault/Page)');
@@ -54,6 +59,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('> [!info] Info callout with content.');
@@ -65,6 +71,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('**Bold text**');
@@ -77,6 +84,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('# Heading 1');
@@ -90,6 +98,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('- List item 1');
@@ -103,6 +112,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('```js\nconsole.log("Hello World");\n```');
@@ -118,9 +128,9 @@ tags: ["tag1", "tag2"]
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
-    // Check if the frontmatter is retained in the output or parsed correctly
     expect(String(file)).toContain('title: "Frontmatter Title"');
     expect(String(file)).toContain('author: "Author Name"');
     expect(String(file)).toContain('tags: ["tag1", "tag2"]');
