@@ -12,9 +12,11 @@ describe('remark-obsidian plugin', () => {
       .use(remarkParse)
       .use(remarkObsidian)
       .process(markdownContent);
+       // Log the AST to inspect the node structure
+      console.log(JSON.stringify(file, null, 2));
 
     let wikiLinkFound = false;
-
+    
     visit(file, 'WikiLink', (node: any) => {
       if (node.value === 'WikiLink') {
         wikiLinkFound = true;
@@ -31,7 +33,7 @@ describe('remark-obsidian plugin', () => {
       .use(remarkParse)
       .use(remarkObsidian)
       .process(markdownContent);
-
+      console.log(JSON.stringify(file, null, 2));
     let aliasLinkFound = false;
 
     visit(file, 'AliasWikiLink', (node: any) => {
@@ -50,7 +52,7 @@ describe('remark-obsidian plugin', () => {
       .use(remarkParse)
       .use(remarkObsidian)
       .process(markdownContent);
-
+      console.log(JSON.stringify(file, null, 2));
     let embeddedNoteFound = false;
 
     visit(file, 'Embedded', (node: any) => {
@@ -69,7 +71,7 @@ describe('remark-obsidian plugin', () => {
       .use(remarkParse)
       .use(remarkObsidian)
       .process(markdownContent);
-
+      console.log(JSON.stringify(file, null, 2));
     let internalLinkFound = false;
 
     visit(file, 'link', (node: any) => {
@@ -88,7 +90,7 @@ describe('remark-obsidian plugin', () => {
       .use(remarkParse)
       .use(remarkObsidian)
       .process(markdownContent);
-
+      console.log(JSON.stringify(file, null, 2));
     let calloutFound = false;
 
     visit(file, 'callout', (node: any) => {
@@ -96,7 +98,7 @@ describe('remark-obsidian plugin', () => {
         calloutFound = true;
       }
     });
-
+    console.log(JSON.stringify(file, null, 2));
     expect(calloutFound).toBe(true);
   });
 
@@ -111,7 +113,7 @@ tags: ["tag1", "tag2"]
       .use(remarkParse)
       .use(remarkObsidian)
       .process(markdownContent);
-
+      console.log(JSON.stringify(file, null, 2));
     let frontmatterTitleFound = false;
     let frontmatterAuthorFound = false;
 
