@@ -55,6 +55,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
+      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
       console.log(JSON.stringify(file, null, 2));
     expect(String(file)).toContain('> [!info] Info callout with content.');
