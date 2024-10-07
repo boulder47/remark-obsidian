@@ -11,7 +11,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
-      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
+      .use(remarkStringify, { fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('[[WikiLink]]');
@@ -23,7 +23,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
-      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
+      .use(remarkStringify, { fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('[[Page Title|Alias]]');
@@ -35,7 +35,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
-      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
+      .use(remarkStringify, { fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('![[EmbeddedNote]]');
@@ -47,7 +47,7 @@ describe('remark-obsidian plugin', () => {
     const file = await remark()
       .use(remarkParse)
       .use(remarkObsidian)
-      .use(remarkStringify, { bullet: '-', fences: true, entities: false }) // Disable escaping
+      .use(remarkStringify, {fences: true, entities: false }) // Disable escaping
       .process(markdownContent);
 
     expect(String(file)).toContain('[Internal Link](obsidian://vault/Page)');
