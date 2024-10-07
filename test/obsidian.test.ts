@@ -15,7 +15,7 @@ describe('remark-obsidian plugin', () => {
 
     let wikiLinkFound = false;
 
-    visit(file, 'wikiLink', (node: any) => {
+    visit(file, 'WikiLink', (node: any) => {
       if (node.value === 'WikiLink') {
         wikiLinkFound = true;
       }
@@ -34,7 +34,7 @@ describe('remark-obsidian plugin', () => {
 
     let aliasLinkFound = false;
 
-    visit(file, 'wikiLink', (node: any) => {
+    visit(file, 'AliasWikiLink', (node: any) => {
       if (node.value === 'Page Title|Alias') {
         aliasLinkFound = true;
       }
@@ -53,7 +53,7 @@ describe('remark-obsidian plugin', () => {
 
     let embeddedNoteFound = false;
 
-    visit(file, 'wikiLink', (node: any) => {
+    visit(file, 'Embedded', (node: any) => {
       if (node.value === 'EmbeddedNote') {
         embeddedNoteFound = true;
       }
