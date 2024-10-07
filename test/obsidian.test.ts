@@ -56,7 +56,7 @@ describe('remark-obsidian plugin', () => {
       .use(remarkParse)
       .use(remarkObsidian)
       .process(markdownContent);
-
+      console.log(JSON.stringify(file, null, 2));
     expect(String(file)).toContain('> [!info] Info callout with content.');
   });
 
