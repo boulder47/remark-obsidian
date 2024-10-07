@@ -75,34 +75,3 @@ export default function remarkObsidian() {
   };
 }
 
-// Example usage: Processing markdown content
-const markdownContent = `
-# Heading 1
-This is a basic markdown text.
-
-**Bold text** and *italic text*.
-
-- List item 1
-- List item 2
-
-\`\`\`js
-console.log("Code block");
-\`\`\`
-
-[[WikiLink]]
-[[Page Title|Alias]]
-
-![[EmbeddedNote]]
-
-> [!info] Info callout with content.
-
-[Internal Link](obsidian://vault/Page)
-`;
-
-remark()
-  .use(remarkParse)
-  .use(remarkObsidian)
-  .process(markdownContent)
-  .then((file) => {
-    console.log(String(file));
-  });
