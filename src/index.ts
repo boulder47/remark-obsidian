@@ -65,7 +65,7 @@ const remarkObsidian: Plugin = () => {
         }
 
         // Handle Callouts
-        const calloutPattern = /> \\\\\[!(\w+)\]\s*(.*)/;
+        const calloutPattern = "/> \\\\\[!(\w+)\]\s*(.*)/" ;
         const calloutMatch = calloutPattern.exec(value);
 
         if (calloutMatch) {
