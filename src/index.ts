@@ -1,13 +1,11 @@
-import { remark } from 'remark';
-import remarkParse from 'remark-parse';
-import visit from 'unist-util-visit';
+import { visit } from 'unist-util-visit';
 
 // Define a Remark plugin for Obsidian-specific syntax
 export default function remarkObsidian() {
-  return function (tree) {
+  return function (tree: any) {
     // Process Obsidian Wiki Links: [[WikiLink]]
     visit(tree, 'link', (node) => {
-      const isWikiLink = node.url.startsWith('[['] && node.url.endsWith(']]');
+      const isWikiLink = node.url.startsWith('[[') && node.url.endsWith(']]');
       if (isWikiLink) {
         const linkContent = node.url.slice(2, -2); // Strip the [[ and ]]
         const parts = linkContent.split('|'); // Handle alias links [[Page|Alias]]
